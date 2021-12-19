@@ -7,28 +7,57 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  content   String?
-  published Boolean  @default(false)
-  authorId  Int
-  user      user     @relation(fields: [authorId], references: [id], map: "Post_authorId_fkey")
+model user {
+  id       Int               @id @default(autoincrement())
+  name     String?
+  email    String            @unique(map: "User_email_key")
+  password String?
+  dni      Int
+  apellido String?
+  post     post[]
+  role     CategoriesRoles[]
+  profile  profile?
 
-  @@index([authorId], map: "Post_authorId_fkey")
+}
+
+model role {
+  id   Int               @id @default(autoincrement())
+  name String?
+  user CategoriesRoles[]
+}
+
+model CategoriesRoles {
+  id     Int  @default(autoincrement())
+  user   user @relation(fields: [userId], references: [id])
+  role   role @relation(fields: [roleId], references: [id])
+  userId Int
+  roleId Int
+
+  @@id([id, roleId, userId])
 }
 
 model product {
   id          Int      @id @default(autoincrement())
   title       String
   description String?
-  precio      Float    @default(0)
   ativo       Boolean  @default(false)
+  precio      Float    @default(0)
   stock       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model post {
+  id        Int      @id @default(autoincrement())
+  title     String   @db.VarChar(255)
+  content   String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  authorId  Int
+  user      user     @relation(fields: [authorId], references: [id], map: "Post_authorId_fkey")
+
+  @@index([authorId], map: "Post_authorId_fkey")
 }
 
 model profile {
@@ -36,15 +65,4 @@ model profile {
   bio    String?
   userId Int     @unique(map: "Profile_userId_key")
   user   user    @relation(fields: [userId], references: [id], map: "Profile_userId_fkey")
-}
-
-model user {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique(map: "User_email_key")
-  name     String?
-  dni      Int
-  apellido String?
-  password String?
-  post     post[]
-  profile  profile?
 }

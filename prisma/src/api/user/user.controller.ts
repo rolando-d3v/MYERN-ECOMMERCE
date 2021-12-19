@@ -11,9 +11,28 @@ const prisma = new PrismaClient();
 export const getUsers: RequestHandler = async (req, res) => {
   try {
     const user = await prisma.user.findMany({
+      // select: {
+      //   email: true,
+      //   name: true,
+      //   dni: true,
+      // },
+
+      // include: {
+      //   post: true
+      // },
+
       select: {
+        id: true,
         email: true,
         name: true,
+        dni: true,
+        post: {
+          select: {
+            title: true,
+            content: true,
+          },
+        },
+        role: true,
       },
     });
 
@@ -29,7 +48,8 @@ export const getUsers: RequestHandler = async (req, res) => {
 export const createUser = async (req: Request, res: Response) => {
   // const userx: User = req.body
 
-  const userx = req.body as User;
+  // const userx = req.body as User;
+  const userx = req.body;
 
   try {
     const user = await prisma.user.create({
@@ -48,8 +68,6 @@ export const createUser = async (req: Request, res: Response) => {
     return res.status(500).json({ msn: "Error: server 😕 ❗️❗️", err });
   }
 };
-
-
 
 //DELETED ONE USER
 //********************************/

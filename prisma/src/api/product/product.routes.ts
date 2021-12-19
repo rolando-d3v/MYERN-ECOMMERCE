@@ -4,10 +4,10 @@ import { Router } from "express";
 import * as CtrlPro from "./product.controller";
 
 //middlewares
-// import {authToken} from "../../middleware/authToken";
+import {authToken} from "../../middlewares/authentication";
 
 const router = Router();
-router.get("/", CtrlPro.getProducts);
+router.get("/", authToken,  CtrlPro.getProducts);
 router.post("/", CtrlPro.createProduct);
 router.delete("/:id", CtrlPro.deleteProduct);
 router.put("/:id", CtrlPro.updatedProduct);
